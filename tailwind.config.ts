@@ -26,7 +26,8 @@ const config = {
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "#2D3F7B",
-          foreground: "#3C529D",
+          light: "#3C529D",
+          foreground: "#FFF",
         },
         secondary: {
           DEFAULT: "#3EF773",
@@ -73,7 +74,7 @@ const config = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       backgroundImage: {
-        "mobile": "url(/assets/bg-mobile.svg)"
+        "mobile": "url(/assets/cropped.svg)"
       }
     },
   },
