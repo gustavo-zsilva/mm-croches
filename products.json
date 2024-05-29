@@ -1,20 +1,23 @@
 [
-    {
-        "imagePath": "gorro",
-        "name": "Gorro de Mirtilo",
-        "price": 10.99,
-        "description": "Description"
-    },
-    {
-        "imagePath": "top",
-        "name": "Top Azul Marinho",
-        "price": 10.99,
-        "description": "Description"
-    },
-    {
-        "imagePath": "yoshi",
-        "name": "Yoshi",
-        "price": 10.99,
-        "description": "Description"
-    }
+  {
+    "imagePath": "gorro",
+    "name": "Gorro de Mirtilo",
+    "price": 10.99,
+    "description": "Description",
+    "underMeasure": false
+  },
+  {
+    "imagePath": "top",
+    "name": "Top Azul Marinho",
+    "price": 10.99,
+    "description": "Description",
+    "underMeasure": true
+  },
+  {
+    "imagePath": "yoshi",
+    "name": "Yoshi",
+    "price": 10.99,
+    "description": "Description",
+    "underMeasure": false
+  }
 ]
