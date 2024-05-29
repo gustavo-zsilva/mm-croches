@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
-      <body className={`${poppins.className} m-auto bg-background`}>{children}</body>
+    <html lang="pt-BR" className="scroll-smooth">
+      <body className={`${poppins.className} m-auto`}>{children}</body>
     </html>
   );
 }
