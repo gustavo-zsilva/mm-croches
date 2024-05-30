@@ -26,7 +26,7 @@ export function Main() {
   ];
 
   return (
-    <main className="flex flex-col justify-center items-center px-6 gap-6">
+    <main className="flex flex-col justify-center items-center px-6 gap-6 max-w-screen-xl lg:m-auto">
       <h1
         className={`${dancingScript.className} font-bold text-5xl text-center`}
       >
