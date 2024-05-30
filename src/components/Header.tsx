@@ -3,16 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Button } from "./ui/button";
 
 export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="flex flex-col items-center py-4 gap-4 px-6">
+    <header className="flex flex-col items-center py-4 gap-4 px-6 max-w-screen-xl lg:flex-row lg:justify-between lg:m-auto">
       <Link href="/">
         <Image width={90} height={90} src="/images/logo.png" alt="Logo" />
       </Link>
-      <nav className="flex gap-8 flex-wrap">
+      <nav className="flex gap-8 flex-wrap items-center">
         <Link
           href="/"
           className={
@@ -35,6 +36,9 @@ export function Header() {
           Loja
         </Link>
         <Link href="#contact">Contato</Link>
+        <Link href="/store" className="hidden lg:inline">
+          <Button>Encomendar</Button>
+        </Link>
       </nav>
     </header>
   );
