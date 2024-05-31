@@ -14,14 +14,14 @@ type ProductCardProps = {
 
 export function ProductCard({ item }: ProductCardProps) {
   return (
-    <li className="flex flex-col cursor-pointer rounded-lg w-full gap-4 group">
+    <li className="flex flex-col cursor-pointer rounded-lg w-full gap-4 group hover:ring hover:ring-offset-8 hover:ring-primary-light/80 transition-shadow">
       <picture className="relative w-full h-36 rounded-lg overflow-hidden">
         <Image
           src={`/images/products/${item.imagePath}.jpg`}
           fill
           sizes="(min-width: 800px) 50vw, 100vw"
           alt={item.name}
-          className="object-cover"
+          className="object-cover group-hover:scale-105 transition-transform"
         />
       </picture>
       <div className="flex flex-col gap-1 font-medium">

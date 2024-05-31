@@ -4,7 +4,7 @@ import { WavyBg } from "@/lib/WavyBg";
 
 export function Contact() {
   return (
-    <section id="contact" className="bg-primary px-0 space-y-10 text-white">
+    <section id="contact" className="bg-primary px-0 text-white">
       <WavyBg>
         <h1>Entre em contato</h1>
         <div className="text-lg text-center space-y-6">
