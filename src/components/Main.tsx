@@ -26,9 +26,9 @@ export function Main() {
   ];
 
   return (
-    <main className="flex flex-col justify-center items-center px-6 gap-6 max-w-screen-xl lg:m-auto">
+    <main className="flex flex-col justify-center items-center px-6 gap-6 max-w-screen-xl lg:grid lg:grid-cols-2 lg:place-items-center lg:m-auto lg:pt-28 lg:gap-10">
       <h1
-        className={`${dancingScript.className} font-bold text-5xl text-center`}
+        className={`${dancingScript.className} font-bold text-5xl text-center lg:text-6xl`}
       >
         Feitos à mão,
         <br />
@@ -41,7 +41,7 @@ export function Main() {
             delay: 3000,
           }),
         ]}
-        className="w-full max-w-xs"
+        className="w-full max-w-xs min-h-20 lg:row-span-2"
       >
         <CarouselContent>
           {images.map((item) => (
@@ -49,8 +49,8 @@ export function Main() {
               <div className="flex justify-center">
                 <Image
                   src={`/images/carousel/${item}.png`}
-                  width={250}
-                  height={250}
+                  width={350}
+                  height={350}
                   alt="Hero"
                 />
               </div>
