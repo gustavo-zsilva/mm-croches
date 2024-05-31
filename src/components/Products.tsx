@@ -17,15 +17,15 @@ export async function Products() {
   const products: Product[] = JSON.parse(file);
 
   return (
-    <section className="flex flex-col items-center gap-10">
+    <section className="flex flex-col items-center gap-10 max-w-screen-xl lg:m-auto lg:gap-20">
       <h1 className="text-primary">Algumas peças</h1>
-      <ul className="flex flex-col w-full gap-6">
+      <ul className="flex flex-col w-full gap-6 md:grid md:grid-cols-3">
         {products.map((product) => (
           <ProductCard key={product.name} item={product} />
         ))}
       </ul>
-      <Link href="/store" className="w-full">
-        <Button className="p-7 rounded-lg w-full justify-between shadow-sm">
+      <Link href="/store" className="w-full lg:flex lg:justify-center">
+        <Button className="p-7 rounded-lg w-full justify-between shadow-sm lg:max-w-screen-md">
           Ver todos
           <ArrowRight />
         </Button>

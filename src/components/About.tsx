@@ -13,14 +13,13 @@ export function About() {
       className="
             flex
             flex-col
-            gap-10
             items-center
             bg-primary
             text-white
             px-0
         "
     >
-      <WavyBg className="px-9">
+      <WavyBg className="px-9 max-w-screen-md">
         <h1>Sobre mim</h1>
         <picture className="bg-gradient-to-br from-secondary to-secondary-foreground p-2 rounded-full">
           <Image
@@ -46,19 +45,21 @@ export function About() {
             especial para você.
           </p>
         </div>
-        <Link href="/store">
-          <Button variant="secondary" className="p-7 px-8 gap-4 shadow-sm">
-            Navegar a loja
-            <ChevronRight
-              color="#FFF"
-              className="bg-primary rounded-full p-0.5"
-            />
+        <div className="flex flex-col gap-10 lg:flex-row lg:items-center">
+          <Link href="/store">
+            <Button variant="secondary" className="p-7 px-8 gap-4 shadow-sm">
+              Navegar a loja
+              <ChevronRight
+                color="#FFF"
+                className="bg-primary rounded-full p-0.5"
+              />
+            </Button>
+          </Link>
+          <Button variant="link">
+            Entre em contato
+            <FaWhatsapp color="#FFF" size={24} />
           </Button>
-        </Link>
-        <Button variant="link">
-          Entre em contato
-          <FaWhatsapp color="#FFF" size={24} />
-        </Button>
+        </div>
       </WavyBg>
     </section>
   );

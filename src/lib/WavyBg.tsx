@@ -10,7 +10,7 @@ export function WavyBg({ children, className }: WavyBgProps) {
     <>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 1440 319"
+        viewBox="0 0 1440 250"
         className="bg-background"
       >
         <path
@@ -20,11 +20,11 @@ export function WavyBg({ children, className }: WavyBgProps) {
         ></path>
       </svg>
       <div
-        className={twMerge("flex flex-col items-center gap-10 px-6", className)}
+        className={twMerge("flex flex-col items-center gap-10 px-6 py-10 lg:py-0", className)}
       >
         {children}
       </div>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 319">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 250">
         <path
           fill="#FFFEF9"
           fillOpacity="1"

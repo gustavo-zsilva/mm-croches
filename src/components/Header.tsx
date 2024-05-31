@@ -9,11 +9,11 @@ export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="flex flex-col items-center py-4 gap-4 px-6 max-w-screen-xl lg:flex-row lg:justify-between lg:m-auto">
+    <header className="flex flex-col items-center py-4 gap-4 px-6 max-w-screen-xl lg:grid lg:grid-cols-3 lg:place-items-center lg:m-auto">
       <Link href="/">
         <Image width={90} height={90} src="/images/logo.png" alt="Logo" />
       </Link>
-      <nav className="flex gap-8 flex-wrap items-center">
+      <nav className="flex gap-8 flex-wrap items-center justify-center">
         <Link
           href="/"
           className={
@@ -36,10 +36,10 @@ export function Header() {
           Loja
         </Link>
         <Link href="#contact">Contato</Link>
+      </nav>
         <Link href="/store" className="hidden lg:inline">
           <Button>Encomendar</Button>
         </Link>
-      </nav>
     </header>
   );
 }
