@@ -76,6 +76,9 @@
   h1 {
     @apply font-semibold text-2xl lg:text-3xl;
   }
+  h2 {
+    @apply font-semibold text-xl;
+  }
   section {
     @apply px-6;
   }
