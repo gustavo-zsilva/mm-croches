@@ -4,15 +4,6 @@ import { StoreSection } from "@/components/StoreSection";
 import { StoreJumpCard } from "@/components/StoreJumpCard";
 
 export default async function Store() {
-  const oauthRaw = await fetch(`https://graph.facebook.com/oauth/access_token?grant_type=client_credentials&client_id=${appId}&client_secret=${clientSecret}`, { cache: 'no-cache' })
-  const oauth = await oauthRaw.json()
-
-
-  const data = await fetch(`https://graph.facebook.com/v20.0/me/accounts?access_token=${oauth.access_token}`, { cache: 'no-cache' })
-  const fb = await data.json()
-  console.log(fb);
-  
-
   return (
     <main className="min-h-screen flex flex-col gap-6">
       <Hero />
