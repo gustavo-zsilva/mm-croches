@@ -1,10 +1,9 @@
 "use client"
 
-import { useRef, useState } from 'react'
-import Image from 'next/image'
+import { collection, addDoc } from "firebase/firestore"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, ControllerFieldState, ControllerRenderProps, FieldValues } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { z } from 'zod'
 
 import { Button } from "@/components/ui/button"
@@ -27,52 +26,41 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { DragDropInput } from '@/components/DragDropInput'
+import { db } from "@/lib/firebase/firebase"
 
 const formSchema = z.object({
     name: z.string().min(3, { message: 'Nome curto demais!' }).max(80, { message: 'Nome comprido demais!' }),
     description: z.string().max(500, { message: 'Descrição comprida demais!' }),
     price: z.coerce.number({ required_error: 'Preço é obrigatório!' }).positive(),
-    imageUrl: z.string().min(1, { message: 'Produto precisa ter uma imagem!' }),
+    imagesUrl: z.string().min(1, { message: 'Produto precisa ter uma imagem!' }),
     customMeasure: z.boolean(),
     promptDelivery: z.boolean(),
     type: z.string().min(1, { message: 'Selecione uma opção!' }),
 })
 
 export default function NewProduct() {
-    const [imagesPreview, setImagesPreview] = useState<string[] | null>(null)
-    const filesRef = useRef<FileList | null>(null)
-
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
             description: "",
             price: 10.99,
-            imageUrl: "",
+            imagesUrl: "",
             customMeasure: false,
             promptDelivery: false,
             type: "",
         }
     })
 
-    function handleImagesChange(files: FileList | null, field: ControllerRenderProps<FieldValues, "imageUrl">) {
-        
-        let blobs = []
-        
-        for (const file of files) {
-            
-            console.log(`Image Src: ${URL.createObjectURL(file)}`)
-            blobs.push(URL.createObjectURL(file))
-        }
-        
-        field.value = blobs.join(';')
-        setImagesPreview(blobs)
-    }
-
-    function handleSubmit(values: z.infer<typeof formSchema>) {
+    async function handleSubmit(values: z.infer<typeof formSchema>) {
         console.log(values)
-       
-        
+
+        try {
+            const docRef = await addDoc(collection(db, "products"), values)
+            console.log(`Document written with ID: ${docRef.id}`);
+        } catch (err) {
+            console.error(`Error adding document: ${err}`)
+        }
     }
 
     return (
@@ -122,23 +110,16 @@ export default function NewProduct() {
                         )}
                     />
                     <FormField
-                        name="imageUrl"
+                        name="imagesUrl"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Imagem</FormLabel>
                                 <FormControl>
-                                    {/* <Input
-                                        className="bg-teal-200 border-teal-300 flex flex-col"
-                                        type="file"
-                                        accept="image/*"
-                                        multiple
-                                        
-                                        value={field.value}
-                                        onChange={(e) => handleImagesChange(e.target.files, field)}
-                                    /> */}
-                                    <DragDropInput />
+                                    <DragDropInput field={field} />
                                 </FormControl>
-                                    {imagesPreview?.map(url => <Image src={url} key={url} alt="Preview" width={200} height={200} />)}
+                                <FormDescription>
+                                    Suas imagens aparecerão aqui
+                                </FormDescription>
                             </FormItem>
                         )}
                     />
@@ -196,7 +177,7 @@ export default function NewProduct() {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full rounded-sm">Submit</Button>
+                    <Button type="submit" className="w-full rounded-sm">Cadastrar</Button>
                 </form>
             </Form>
         </div>
