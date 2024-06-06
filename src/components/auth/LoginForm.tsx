@@ -1,3 +1,7 @@
+"use client"
+
+import { useRouter } from "next/navigation"
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from 'zod'
@@ -6,7 +10,6 @@ import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -15,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import {
     getAuth,
-    signInWithEmailAndPassword
+    signInWithEmailAndPassword,
 } from "firebase/auth"
 
 const formSchema = z.object({
@@ -25,6 +28,7 @@ const formSchema = z.object({
 
 export function LoginForm() {
     const auth = getAuth()
+    const router = useRouter()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -34,12 +38,14 @@ export function LoginForm() {
         }
     })
 
-    async function loginUser({ email, password }: z.infer<typeof formSchema>) {
+    async function handleLoginUser({ email, password }: z.infer<typeof formSchema>) {
         console.log({ email, password });
         
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password)
             const user = userCredential.user
+
+            router.push('/store/new-product')
 
             console.log(`User: ${user}`)
         } catch (err: any) {
@@ -49,7 +55,7 @@ export function LoginForm() {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(loginUser)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(handleLoginUser)} className="space-y-8">
                 <FormField
                     name="email"
                     render={({ field }) => (
@@ -58,9 +64,6 @@ export function LoginForm() {
                             <FormControl>
                                 <Input placeholder="Email" type="email" {...field} />
                             </FormControl>
-                            <FormDescription>
-                                Email cadastrado pelo administrador
-                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -73,9 +76,6 @@ export function LoginForm() {
                             <FormControl>
                                 <Input placeholder="Sua senha" type="password" {...field} />
                             </FormControl>
-                            <FormDescription>
-                                Senha cadastrada pelo administrador
-                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
