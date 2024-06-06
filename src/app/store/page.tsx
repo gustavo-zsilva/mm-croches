@@ -28,7 +28,7 @@ export default async function Store() {
         </ul>
       </StoreSection>
       <StoreSection title="Amigurumis 🧸" description="Seu próximo bixinho de estimação, a um toque de distância">
-        {Array.from({ length: 10 }).map(_ => (
+        {Array.from({ length: 10 }).map((_, index) => (
           <ProductCard item={{
             description: "Description",
             imagePath: "top",
@@ -37,6 +37,7 @@ export default async function Store() {
             price: 10.99
           }}
           variant="store"
+          key={index}
           />
         ))}
       </StoreSection>
