@@ -1,24 +1,24 @@
-import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
+import admin from '@/lib/firebase/admin'
 
-import '@/lib/firebase/firebase'
-
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
-
-export function middleware(request: NextRequest) {
-    const auth = getAuth()
-    console.log('Current User: ', auth.currentUser);
+export async function middleware(request: NextRequest) {
+    // Get Authorization from cookies
     
+    const auth = admin.auth()
+    const currentUser = request.cookies.get('currentUser')?.value
 
-    // if (auth.currentUser) {
-    //     console.log('Logged in');
-        
-    //     return NextResponse.redirect(new URL('/', request.url))
-    // } else {
-    //     return NextResponse.redirect(new URL('/store', request.url))
-    // }
-
-
+    try {
+        const matchingUid = await auth.getUser(currentUser || '')
+        console.log(`User found in database: ${matchingUid.email}`)
+    } catch (err) {
+        console.error(err)
+        return Response.redirect(new URL('/store', request.url))
+    }
+    
+    if (!currentUser) {
+        return Response.redirect(new URL('/store', request.url))
+    }
+    
 }
 
 export const config = {
