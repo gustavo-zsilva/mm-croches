@@ -22,6 +22,7 @@ Esse projeto foi desenvolvido com as seguintes tecnologias:
 
 - NextJS v14
 - TailwindCSS
+- shadcn/ui
 - Typescript
 - Firebase
 - Git e Github
