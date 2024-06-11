@@ -13,51 +13,63 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth"
+import { useToast } from "@/components/ui/use-toast"
+import { handleCreateUser } from "@/lib/actions/registerUser"
 
-const formSchema = z.object({
-    email: z.string().endsWith('@gmail.com', { message: 'Digite um email válido!' }),
+// import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth"
+
+export const formSchema = z.object({
+    email: z.string().email({ message: 'Digite um email válido!' }),
+    name: z.string(),
     password: z.string().min(1, { message: 'Você deve preencher este campo!' }),
 })
 
 export function RegisterForm() {
-    const auth = getAuth()
+    const { toast } = useToast()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             email: "",
+            name: "",
             password: "",
         }
     })
-
-    const whitelistedEmails = [
-        "marina.konstantinou.tavares@gmail.com",
-        "marinamorenamiamore@gmail.com",
-        "petzmarina25@gmail.com",
-    ]
     
-    async function handleRegisterUser({ email, password }: z.infer<typeof formSchema>) {
-        console.log({ email, password });
+    async function handleRegisterUser({ name, email, password }: z.infer<typeof formSchema>) {
+        const response = await handleCreateUser({ name, email, password })
 
-        if (!whitelistedEmails.includes(email)) {
-            console.log('Você não tem privilégios de admin!');
-            return
+        if (response.status !== 200) {
+            return toast({
+                title: response.message,
+                variant: 'destructive',
+            })
         }
-        
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-            const user = userCredential.user
-            
-            console.log(`User: ${user}`)
-        } catch (err: any) {
-            console.error(err.message)
-        }
+
+        toast({
+            title: response.message,
+            description: 'Faça login na aba do lado!',
+        })
     }
 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleRegisterUser)} className="space-y-8">
+                <FormField
+                    name="name"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Nome</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Seu nome" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                                Opcional
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FormField
                     name="email"
                     render={({ field }) => (
