@@ -1,7 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from 'zod'
@@ -16,18 +14,18 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import {
-    getAuth,
-    signInWithEmailAndPassword,
-} from "firebase/auth"
+import { useToast } from "@/components/ui/use-toast"
 
-const formSchema = z.object({
+import { handleSignIn } from "@/lib/actions/signIn"
+import { useRouter } from "next/navigation"
+
+export const formSchema = z.object({
     email: z.string().endsWith('@gmail.com', { message: 'Digite um email válido!' }),
     password: z.string().min(1, { message: 'Você deve preencher este campo!' }),
 })
 
 export function LoginForm() {
-    const auth = getAuth()
+    const { toast } = useToast()
     const router = useRouter()
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -39,17 +37,24 @@ export function LoginForm() {
     })
 
     async function handleLoginUser({ email, password }: z.infer<typeof formSchema>) {
-        console.log({ email, password });
-        
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password)
-            const user = userCredential.user
+        const response = await handleSignIn({ email, password })
+
+        if (response.status === 200) {
+            toast({
+                title: response.message,
+                description: 'Bem-vindo(a) de volta! Redirecionando para a loja em 3 segundos...',
+            })
+
+            // Delay de 3 segundos
+            await new Promise(resolve => setTimeout(resolve, 3000))
 
             router.push('/store/new-product')
-
-            console.log(`User: ${user}`)
-        } catch (err: any) {
-            console.error(err.message)
+        } else {
+            toast({
+                title: 'Algo deu errado!',
+                description: response.message,
+                variant: 'destructive',
+            })
         }
     }
 
