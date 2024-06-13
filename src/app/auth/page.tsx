@@ -1,7 +1,7 @@
 "use client"
 
 import "@/lib/firebase/firebase"
-import { GoogleAuthProvider } from "firebase/auth"
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -11,32 +11,41 @@ import { RegisterForm } from "@/components/auth/RegisterForm"
 import { FcGoogle } from "react-icons/fc";
 
 export default function Auth() {
+    const auth = getAuth()
     const provider = new GoogleAuthProvider()
+
+    async function handleSignInWithGoogle() {
+        const result = await signInWithPopup(auth, provider)
+        console.log(result.user)
+    }
 
     return (
         <main className="flex flex-col gap-10 p-9">
             <h1>Autenticação</h1>
-            <button className="
-                inline-flex
-                items-center
-                justify-center
-                gap-4
-                px-6
-                py-3
-                rounded-full
-                whitespace-nowrap
-                text-md   
-                border
-                border-black
-                shadow-md
-                ring-offset-background
-                hover:bg-gray-100
-                transition-colors
-                focus-visible:outline-none
-                focus-visible:ring-2
-                focus-visible:ring-ring
-                focus-visible:ring-offset-2
-            ">
+            <button
+                className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-4
+                    px-6
+                    py-3
+                    rounded-full
+                    whitespace-nowrap
+                    text-md   
+                    border
+                    border-black
+                    shadow-md
+                    ring-offset-background
+                    hover:bg-gray-100
+                    transition-colors
+                    focus-visible:outline-none
+                    focus-visible:ring-2
+                    focus-visible:ring-ring
+                    focus-visible:ring-offset-2
+                "
+                onClick={handleSignInWithGoogle}
+            >
                 <FcGoogle size={32} />
                 Login com Google
             </button>
