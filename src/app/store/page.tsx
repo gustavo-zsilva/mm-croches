@@ -2,8 +2,33 @@ import { Hero } from "@/components/Hero";
 import { ProductCard } from "@/components/ProductCard";
 import { StoreSection } from "@/components/StoreSection";
 import { StoreJumpCard } from "@/components/StoreJumpCard";
+import { DocumentData, collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase/firebase";
+
+type Doc = {
+  name: string,
+  description: string,
+  price: number,
+  imagesUrl: string,
+  type: string,
+  customMeasure: boolean,
+  prompDelivery: boolean,
+}
 
 export default async function Store() {
+
+  const querySnapshot = await getDocs(collection(db, 'products'))
+
+  const docs: any[] = []
+
+  querySnapshot.forEach((doc) => {
+    docs.push(doc.data())
+    
+  })
+
+  console.log(docs);
+  
+
   return (
     <main className="min-h-screen flex flex-col gap-6">
       <Hero />
@@ -28,16 +53,11 @@ export default async function Store() {
         </ul>
       </StoreSection>
       <StoreSection title="Amigurumis 🧸" description="Seu próximo bixinho de estimação, a um toque de distância">
-        {Array.from({ length: 10 }).map((_, index) => (
-          <ProductCard item={{
-            description: "Description",
-            imagePath: "top",
-            name: "Top",
-            underMeasure: false,
-            price: 10.99
-          }}
-          variant="store"
-          key={index}
+        {docs.map((doc) => (
+          <ProductCard
+            item={doc}
+            variant="store"
+            key={doc.name}
           />
         ))}
       </StoreSection>
