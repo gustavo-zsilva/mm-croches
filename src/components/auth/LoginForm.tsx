@@ -1,5 +1,7 @@
 "use client"
 
+import { useRouter } from "next/navigation"
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from 'zod'
@@ -16,8 +18,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 
-import { handleSignIn } from "@/lib/actions/signIn"
-import { useRouter } from "next/navigation"
+import { signInWithEmailAndPassword, getAuth } from "firebase/auth"
+
+import { handleSetToken } from "@/lib/actions/setToken"
 
 export const formSchema = z.object({
     email: z.string().endsWith('@gmail.com', { message: 'Digite um email válido!' }),
@@ -37,22 +40,26 @@ export function LoginForm() {
     })
 
     async function handleLoginUser({ email, password }: z.infer<typeof formSchema>) {
-        const response = await handleSignIn({ email, password })
-
-        if (response.status === 200) {
+        try {
+            const auth = getAuth()
+            const userCredential = await signInWithEmailAndPassword(auth, email, password)
+            const idToken = await userCredential.user.getIdToken()
+            
+            handleSetToken({ idToken })
+            
             toast({
-                title: response.message,
+                title: 'Login realizado com sucesso!',
                 description: 'Bem-vindo(a) de volta! Redirecionando para a loja em 3 segundos...',
             })
-
+    
             // Delay de 3 segundos
             await new Promise(resolve => setTimeout(resolve, 3000))
 
             router.push('/store/new-product')
-        } else {
+        } catch (err: any) {
             toast({
                 title: 'Algo deu errado!',
-                description: response.message,
+                description: err.message,
                 variant: 'destructive',
             })
         }
