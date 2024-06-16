@@ -1,6 +1,7 @@
 "use client"
 
-import { collection, addDoc } from "firebase/firestore"
+import { collection, addDoc, query, getDocs } from "firebase/firestore"
+import { db } from "@/lib/firebase/firebase"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -25,8 +26,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { useToast } from "@/components/ui/use-toast"
 import { DragDropInput } from '@/components/DragDropInput'
-import { db } from "@/lib/firebase/firebase"
 
 const formSchema = z.object({
     name: z.string().min(3, { message: 'Nome curto demais!' }).max(80, { message: 'Nome comprido demais!' }),
@@ -39,6 +40,8 @@ const formSchema = z.object({
 })
 
 export default function NewProduct() {
+    const { toast } = useToast()
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -51,13 +54,24 @@ export default function NewProduct() {
             type: "",
         }
     })
+    
 
     async function handleSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+        const q = query(collection(db, 'users'))
+        const querySnapshot = await getDocs(q)
+
+
+        console.log(querySnapshot)
 
         try {
             const docRef = await addDoc(collection(db, "products"), values)
-            console.log(`Document written with ID: ${docRef.id}`);
+            console.log(`Document written with ID: ${docRef.id}`)
+
+            toast({
+                title: `Produto adicionado com sucesso!`,
+            })
+
+            form.reset()
         } catch (err) {
             console.error(`Error adding document: ${err}`)
         }
