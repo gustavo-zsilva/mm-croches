@@ -3,6 +3,8 @@
 import { collection, addDoc, query, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase/firebase"
 
+import { getStorage, ref, uploadBytes } from 'firebase/storage'
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from 'zod'
@@ -60,12 +62,25 @@ export default function NewProduct() {
         const q = query(collection(db, 'users'))
         const querySnapshot = await getDocs(q)
 
+        const storage = getStorage()
 
         console.log(querySnapshot)
 
         try {
+            
             const docRef = await addDoc(collection(db, "products"), values)
             console.log(`Document written with ID: ${docRef.id}`)
+            
+            // Upload Images
+            const blobs = values.imagesUrl.split(';').map(blob => new Blob([blob]))
+            const promisesImagesUpload = blobs.map((blob, index) => {
+                const storageRef = ref(storage, `uploads/${docRef.id}-${index}.png`)
+                return uploadBytes(storageRef, blob, { contentType: 'image/png' })
+            })
+
+            const uploadedImages = await Promise.all(promisesImagesUpload)
+
+            console.log(uploadedImages)
 
             toast({
                 title: `Produto adicionado com sucesso!`,
