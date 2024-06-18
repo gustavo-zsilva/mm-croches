@@ -15,13 +15,16 @@ export function DragDropInput({ field }: DragDropInputProps) {
     const [dragActive, setDragActive] = useState(false)
     const inputRef = useRef<HTMLInputElement | null>(null)
     const [imagesPreview, setImagesPreview] = useState<string[]>([])
+    const [files, setFiles] = useState<File[]>([])
 
     useEffect(() => {
         const stringUrlList = imagesPreview.join(';')
         field.value = stringUrlList
         field.onChange(stringUrlList)
 
-    }, [imagesPreview])
+        console.log(`Files: ${files}`)
+
+    }, [imagesPreview, files])
 
     function handleDrop(e: any) {
         e.preventDefault()
@@ -29,8 +32,12 @@ export function DragDropInput({ field }: DragDropInputProps) {
         setDragActive(false)
 
         const droppedFiles: File[] = Array.from(e.dataTransfer.files)
+        // Continue here (trying to send blob array to new-product page)
+        const blobList = droppedFiles.map(file => new Blob([file]))
         const urlList = droppedFiles.map(file => URL.createObjectURL(file))
 
+        setFiles((prevState) => [...prevState, ...droppedFiles])
+        // -----------
         setImagesPreview((prevState) => [...prevState, ...urlList])
     }
 
@@ -41,7 +48,6 @@ export function DragDropInput({ field }: DragDropInputProps) {
     function handleDragEnter(e: any) {
         e.preventDefault()
         setDragActive(true)
-        
     }
 
     function handleDragLeave(e: any) {
@@ -56,7 +62,13 @@ export function DragDropInput({ field }: DragDropInputProps) {
     function handleFileChange(e: any) {
         const selectedFiles: File[] = Array.from(e.target.files)
         const urlList = selectedFiles.map(file => URL.createObjectURL(file))
-        
+        // Continue here (trying to send blob array to new-product page)
+        const blobList = selectedFiles.map(file => new Blob([file]))
+
+        console.log(blobList)
+
+        setFiles((prevState) => [...prevState, ...selectedFiles])
+        // ----------
         setImagesPreview((prevState) => [...prevState, ...urlList])
     }
 
