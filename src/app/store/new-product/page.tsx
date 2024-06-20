@@ -31,11 +31,22 @@ import {
 import { useToast } from "@/components/ui/use-toast"
 import { DragDropInput } from '@/components/DragDropInput'
 
+const MAX_FILE_SIZE = 2000000
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
+
 const formSchema = z.object({
     name: z.string().min(3, { message: 'Nome curto demais!' }).max(80, { message: 'Nome comprido demais!' }),
     description: z.string().max(500, { message: 'Descrição comprida demais!' }),
     price: z.coerce.number({ required_error: 'Preço é obrigatório!' }).positive(),
-    imagesUrl: z.string().min(1, { message: 'Produto precisa ter uma imagem!' }),
+    images: z
+        .array(z.custom<File>())
+        .refine((files) => {
+            return files.every(file => file instanceof File)
+        }, { message: 'Selecione uma ou mais imagens.' })
+        .refine((files) => files.every(file => file.size <= MAX_FILE_SIZE),
+            'Tamanho do arquivo deve ser menor que 2mb.'
+        )
+        .refine((files) => files.every(file => ACCEPTED_IMAGE_TYPES.includes(file.type))),
     customMeasure: z.boolean(),
     promptDelivery: z.boolean(),
     type: z.string().min(1, { message: 'Selecione uma opção!' }),
@@ -50,7 +61,7 @@ export default function NewProduct() {
             name: "",
             description: "",
             price: 10.99,
-            imagesUrl: "",
+            images: [],
             customMeasure: false,
             promptDelivery: false,
             type: "",
@@ -67,20 +78,20 @@ export default function NewProduct() {
         console.log(querySnapshot)
 
         try {
-            
-            const docRef = await addDoc(collection(db, "products"), values)
+            const { images, ...formData } = values
+            const docRef = await addDoc(collection(db, "products"), formData)
             console.log(`Document written with ID: ${docRef.id}`)
             
             // Upload Images
-            const blobs = values.imagesUrl.split(';').map(blob => new Blob([blob]))
-            const promisesImagesUpload = blobs.map((blob, index) => {
-                const storageRef = ref(storage, `uploads/${docRef.id}-${index}.png`)
-                return uploadBytes(storageRef, blob, { contentType: 'image/png' })
+            const promisesImagesUpload = images.map((file, index) => {
+                const storageRef = ref(storage, `uploads/${docRef.id}-${index}`)
+                return uploadBytes(storageRef, file, { contentType: file.type })
             })
 
             const uploadedImages = await Promise.all(promisesImagesUpload)
 
-            console.log(uploadedImages)
+            console.log(`Images: ${values.images}`)
+            console.log(`Uploaded images: ${uploadedImages}`)
 
             toast({
                 title: `Produto adicionado com sucesso!`,
@@ -139,7 +150,7 @@ export default function NewProduct() {
                         )}
                     />
                     <FormField
-                        name="imagesUrl"
+                        name="images"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Imagem</FormLabel>
