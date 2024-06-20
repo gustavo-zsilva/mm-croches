@@ -8,7 +8,7 @@ import { ControllerRenderProps, FieldValues } from "react-hook-form"
 import { ImagePlus, X } from "lucide-react"
 
 type DragDropInputProps = {
-    field: ControllerRenderProps<FieldValues, "imagesUrl">
+    field: ControllerRenderProps<FieldValues, "images">
 }
 
 export function DragDropInput({ field }: DragDropInputProps) {
@@ -18,12 +18,8 @@ export function DragDropInput({ field }: DragDropInputProps) {
     const [files, setFiles] = useState<File[]>([])
 
     useEffect(() => {
-        const stringUrlList = imagesPreview.join(';')
-        field.value = stringUrlList
-        field.onChange(stringUrlList)
-
-        console.log(`Files: ${files}`)
-
+        field.value = files
+        field.onChange(files)
     }, [imagesPreview, files])
 
     function handleDrop(e: any) {
@@ -32,13 +28,29 @@ export function DragDropInput({ field }: DragDropInputProps) {
         setDragActive(false)
 
         const droppedFiles: File[] = Array.from(e.dataTransfer.files)
-        // Continue here (trying to send blob array to new-product page)
-        const blobList = droppedFiles.map(file => new Blob([file]))
         const urlList = droppedFiles.map(file => URL.createObjectURL(file))
 
         setFiles((prevState) => [...prevState, ...droppedFiles])
-        // -----------
         setImagesPreview((prevState) => [...prevState, ...urlList])
+    }
+
+    function handleFileChange(e: any) {
+        const selectedFiles: File[] = Array.from(e.target.files)
+        const urlList = selectedFiles.map(file => URL.createObjectURL(file))
+
+        setFiles((prevState) => [...prevState, ...selectedFiles])
+        setImagesPreview((prevState) => [...prevState, ...urlList])
+    }
+
+    function handleDeleteFile(e: any, url: string) {
+        e.preventDefault()
+
+        URL.revokeObjectURL(url)
+
+        const newImagesPreview = imagesPreview.filter(currentUrl => currentUrl !== url)
+        const newFiles = files.filter(currentFile => currentFile !== files[imagesPreview.indexOf(url)])
+        setImagesPreview(newImagesPreview)
+        setFiles(newFiles)
     }
 
     function handleDragOver(e: any) {
@@ -57,26 +69,6 @@ export function DragDropInput({ field }: DragDropInputProps) {
 
     function handleOpenFileExplorer() {
         inputRef.current?.click()
-    }
-
-    function handleFileChange(e: any) {
-        const selectedFiles: File[] = Array.from(e.target.files)
-        const urlList = selectedFiles.map(file => URL.createObjectURL(file))
-        // Continue here (trying to send blob array to new-product page)
-        const blobList = selectedFiles.map(file => new Blob([file]))
-
-        console.log(blobList)
-
-        setFiles((prevState) => [...prevState, ...selectedFiles])
-        // ----------
-        setImagesPreview((prevState) => [...prevState, ...urlList])
-    }
-
-    function handleDeleteFile(e: any, url: string) {
-        e.preventDefault()
-
-        const newImagesPreview = imagesPreview.filter(currentUrl => currentUrl !== url)
-        setImagesPreview(newImagesPreview)
     }
 
     return (
@@ -126,7 +118,6 @@ export function DragDropInput({ field }: DragDropInputProps) {
                         </picture>
                         <button
                             className="absolute text-center p-1 bg-red-500 rounded-full -top-2 -right-2"
-                            data-url={url}
                             onClick={(e) => handleDeleteFile(e, url)}
                         >
                             <X color="#FFF" size={18} />
