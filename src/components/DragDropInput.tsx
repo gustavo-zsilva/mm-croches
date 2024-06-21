@@ -6,21 +6,37 @@ import Image from "next/image"
 import { ControllerRenderProps, FieldValues } from "react-hook-form"
 
 import { ImagePlus, X } from "lucide-react"
+import { Progress } from "@/components/ui/progress"
 
 type DragDropInputProps = {
-    field: ControllerRenderProps<FieldValues, "images">
+    field: ControllerRenderProps<FieldValues, "images">,
+    uploadProgress: number,
+    uploadStatus: string,
+    isDirty: boolean,
 }
 
-export function DragDropInput({ field }: DragDropInputProps) {
+export function DragDropInput({ field, uploadProgress, uploadStatus, isDirty }: DragDropInputProps) {
     const [dragActive, setDragActive] = useState(false)
     const inputRef = useRef<HTMLInputElement | null>(null)
     const [imagesPreview, setImagesPreview] = useState<string[]>([])
     const [files, setFiles] = useState<File[]>([])
 
+    
     useEffect(() => {
         field.value = files
         field.onChange(files)
+        
     }, [imagesPreview, files])
+
+    useEffect(() => {
+        if (!isDirty) {
+            setImagesPreview([])
+            setFiles([])
+        }
+    }, [isDirty])
+
+    // Reset function
+    // Reset files & imagesPreview
 
     function handleDrop(e: any) {
         e.preventDefault()
@@ -125,6 +141,8 @@ export function DragDropInput({ field }: DragDropInputProps) {
                     </li>
                 ))}
             </ul>
+            <p>{uploadStatus}</p>
+            <Progress value={uploadProgress} />
         </div>
 
     )
