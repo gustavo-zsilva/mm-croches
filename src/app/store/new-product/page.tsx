@@ -1,9 +1,11 @@
 "use client"
 
-import { collection, addDoc, query, getDocs } from "firebase/firestore"
+import { useState } from "react"
+
+import { collection, addDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase/firebase"
 
-import { getStorage, ref, uploadBytes } from 'firebase/storage'
+import { getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -29,7 +31,8 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { useToast } from "@/components/ui/use-toast"
-import { DragDropInput } from '@/components/DragDropInput'
+
+import { DragDropInput } from "@/components/DragDropInput"
 
 const MAX_FILE_SIZE = 2000000
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
@@ -39,14 +42,10 @@ const formSchema = z.object({
     description: z.string().max(500, { message: 'Descrição comprida demais!' }),
     price: z.coerce.number({ required_error: 'Preço é obrigatório!' }).positive(),
     images: z
-        .array(z.custom<File>())
-        .refine((files) => {
-            return files.every(file => file instanceof File)
-        }, { message: 'Selecione uma ou mais imagens.' })
-        .refine((files) => files.every(file => file.size <= MAX_FILE_SIZE),
-            'Tamanho do arquivo deve ser menor que 2mb.'
-        )
-        .refine((files) => files.every(file => ACCEPTED_IMAGE_TYPES.includes(file.type))),
+        .any()
+        .refine((files) => files.length > 0, "Escolha uma ou mais imagens.")
+        .refine((files) => files.every((file: File) => file.size <= MAX_FILE_SIZE, "Tamanho de arquivo máximo é 2mb."))
+        .refine((files) => files.every((file: File) => ACCEPTED_IMAGE_TYPES.includes(file.type), "Apenas arquivos .jpg, .jpeg, .png e .webp são aceitos.")),
     customMeasure: z.boolean(),
     promptDelivery: z.boolean(),
     type: z.string().min(1, { message: 'Selecione uma opção!' }),
@@ -54,6 +53,8 @@ const formSchema = z.object({
 
 export default function NewProduct() {
     const { toast } = useToast()
+    const [uploadProgress, setUploadProgress] = useState(0)
+    const [uploadStatus, setUploadStatus] = useState('')
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -67,37 +68,66 @@ export default function NewProduct() {
             type: "",
         }
     })
-    
 
     async function handleSubmit(values: z.infer<typeof formSchema>) {
-        const q = query(collection(db, 'users'))
-        const querySnapshot = await getDocs(q)
-
-        const storage = getStorage()
-
-        console.log(querySnapshot)
-
         try {
+            const storage = getStorage()
+
+            // Write product to database
             const { images, ...formData } = values
             const docRef = await addDoc(collection(db, "products"), formData)
             console.log(`Document written with ID: ${docRef.id}`)
             
             // Upload Images
-            const promisesImagesUpload = images.map((file, index) => {
+            let totalSize = images.reduce((acc: number, file: File) => acc + file.size, 0)
+            let uploadedSize = 0
+            const uploadedSizesTracker: number[] = []
+
+            const promisesImagesUpload: Promise<string>[] = images.map((file: File, index: number) => {
                 const storageRef = ref(storage, `uploads/${docRef.id}-${index}`)
-                return uploadBytes(storageRef, file, { contentType: file.type })
+                const uploadTask = uploadBytesResumable(storageRef, file, { contentType: file.type })
+
+                return new Promise((resolve, reject) => {
+                    setUploadStatus('Fazendo upload...')
+                    uploadTask.on('state_changed', snapshot => {
+                        // Monitora em um array os uploaded bytes de cada imagem individual, calcula o ganho de bytes de cada snapshot,
+                        // atualiza o número atual de uploaded bytes no array e adiciona o ganho de bytes em 'uploadedSize'.
+                        const prevUploadedSize = uploadedSizesTracker[index] || 0
+                        const currentUploadedSize = snapshot.bytesTransferred - prevUploadedSize
+
+                        uploadedSizesTracker[index] = snapshot.bytesTransferred
+                        uploadedSize += currentUploadedSize
+                        
+                        // Ele ta pegando e adicionando o bytesTransfered de antes com o depois, e não adicionando a diferença, que era pra ser o correto
+                        // Exemplo: 100 bytes agora, proximo snapshot 120 bytes. uploadedSize deveria ser 120, e não 220.
+                        
+                        const progress = Math.round((uploadedSize / totalSize) * 100)
+
+                        setUploadProgress(progress)
+                    }, (error) => {
+                        reject(error)
+                        uploadTask.cancel()
+                    }, () => {
+                        resolve('Upload finalizado!')
+                    })
+                })
             })
 
-            const uploadedImages = await Promise.all(promisesImagesUpload)
+            try {
+                await Promise.all(promisesImagesUpload)
 
-            console.log(`Images: ${values.images}`)
-            console.log(`Uploaded images: ${uploadedImages}`)
-
-            toast({
-                title: `Produto adicionado com sucesso!`,
-            })
-
-            form.reset()
+                console.log('Uploads complete')
+                setUploadStatus('Uploads finalizados!')
+    
+                toast({
+                    title: `Produto adicionado com sucesso!`,
+                })
+                form.reset()
+            } catch (err) {
+                console.error(err)
+                setUploadProgress(0)
+                setUploadStatus('Algo deu errado!')
+            }
         } catch (err) {
             console.error(`Error adding document: ${err}`)
         }
@@ -155,11 +185,17 @@ export default function NewProduct() {
                             <FormItem>
                                 <FormLabel>Imagem</FormLabel>
                                 <FormControl>
-                                    <DragDropInput field={field} />
+                                    <DragDropInput
+                                        field={field}
+                                        uploadProgress={uploadProgress}
+                                        uploadStatus={uploadStatus}
+                                        isDirty={form.getFieldState("images").isDirty}
+                                    />
                                 </FormControl>
                                 <FormDescription>
                                     Suas imagens aparecerão aqui
                                 </FormDescription>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
