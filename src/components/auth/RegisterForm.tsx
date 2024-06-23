@@ -1,3 +1,5 @@
+'use client'
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from 'zod'
@@ -15,8 +17,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 import { handleCreateUser } from "@/lib/actions/registerUser"
-
-// import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth"
 
 export const formSchema = z.object({
     email: z.string().email({ message: 'Digite um email válido!' }),
@@ -48,7 +48,7 @@ export function RegisterForm() {
 
         toast({
             title: response.message,
-            description: 'Faça login na aba do lado!',
+            description: 'Após isso, faça login na aba do lado!',
         })
     }
 
