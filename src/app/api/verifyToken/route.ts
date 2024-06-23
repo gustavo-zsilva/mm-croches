@@ -12,5 +12,4 @@ export async function GET(request: NextRequest) {
     } catch (err: any) {
         return Response.json({ status: 500, ...err })
     }
-
 }
