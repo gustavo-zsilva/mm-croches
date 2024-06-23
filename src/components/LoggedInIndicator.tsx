@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
 
 import '@/lib/firebase/firebase'
 import { User, getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
@@ -11,6 +10,8 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
+
+import { clearToken } from '@/lib/actions/clearToken'
 
 export function LoggedInIndicator() {
     const auth = getAuth()
@@ -27,17 +28,14 @@ export function LoggedInIndicator() {
     useEffect(() => {
         onAuthStateChanged(auth, user => {
             if (user) {
-                console.log(user.email);
-                console.log(user.uid);
-                
+                console.log(user.email)
                 setUser(user)
             } else {
                 console.log('Signed Out')
+                clearToken()
                 setUser(null)
             }
         })
-
-        // handleSignOut()
     }, [])
 
     if (!user) {
