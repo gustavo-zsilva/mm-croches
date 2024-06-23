@@ -43,6 +43,17 @@ export function LoginForm() {
         try {
             const auth = getAuth()
             const userCredential = await signInWithEmailAndPassword(auth, email, password)
+            
+            if (!userCredential.user.emailVerified) {
+                toast({
+                    title: 'Verifique o seu email antes de fazer login.',
+                    description: 'Enviamos um link ao seu email para confirmar que é realmente você.',
+                    variant: 'destructive',
+                })
+                await auth.signOut()
+                return
+            }
+
             const idToken = await userCredential.user.getIdToken()
             
             handleSetToken({ idToken })
