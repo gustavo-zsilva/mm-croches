@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
     }
 
     const data = await fetch('http://localhost:3000/api/verifyToken', {
-        headers: request.headers, // Pass along headers, so that API handler can access cookies
+        headers: request.headers, // Pass along headers, so that route handler can access cookies
         cache: 'no-cache',
     })
 
