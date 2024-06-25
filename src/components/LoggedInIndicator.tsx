@@ -26,7 +26,7 @@ export function LoggedInIndicator() {
     }
 
     useEffect(() => {
-        onAuthStateChanged(auth, user => {
+        const unsubscribe = onAuthStateChanged(auth, user => {
             if (user) {
                 console.log(user.email)
                 setUser(user)
@@ -36,6 +36,10 @@ export function LoggedInIndicator() {
                 setUser(null)
             }
         })
+
+        return () => {
+            unsubscribe()
+        }
     }, [])
 
     if (!user) {
