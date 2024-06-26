@@ -36,8 +36,8 @@ export async function handleCreateUser({ name, email, password }: z.infer<typeof
             port: 587,
             secure: false,
             auth: {
-                user: 'mmcozycrochet@gmail.com',
-                pass: 'nimt lmwt sfew mjzg',
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS,
             }
         })
 
