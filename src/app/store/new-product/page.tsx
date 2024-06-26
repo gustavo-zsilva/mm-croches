@@ -5,7 +5,7 @@ import { useState } from "react"
 import { collection, addDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase/firebase"
 
-import { getStorage, ref, uploadBytesResumable } from 'firebase/storage'
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -71,20 +71,17 @@ export default function NewProduct() {
 
     async function handleSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const storage = getStorage()
-
-            // Write product to database
             const { images, ...formData } = values
-            const docRef = await addDoc(collection(db, "products"), formData)
-            console.log(`Document written with ID: ${docRef.id}`)
-            
+
             // Upload Images
+            const storage = getStorage()
+            
             let totalSize = images.reduce((acc: number, file: File) => acc + file.size, 0)
             let uploadedSize = 0
             const uploadedSizesTracker: number[] = []
 
             const promisesImagesUpload: Promise<string>[] = images.map((file: File, index: number) => {
-                const storageRef = ref(storage, `uploads/${docRef.id}-${index}`)
+                const storageRef = ref(storage, `uploads/${values.name}-${index}`)
                 const uploadTask = uploadBytesResumable(storageRef, file, { contentType: file.type })
 
                 return new Promise((resolve, reject) => {
@@ -108,28 +105,36 @@ export default function NewProduct() {
                         reject(error)
                         uploadTask.cancel()
                     }, () => {
-                        resolve('Upload finalizado!')
+                        getDownloadURL(uploadTask.snapshot.ref)
+                            .then(downloadURL => resolve(downloadURL))
                     })
                 })
             })
 
-            try {
-                await Promise.all(promisesImagesUpload)
+            const downloadsUrl = await Promise.all(promisesImagesUpload)
 
-                console.log('Uploads complete')
-                setUploadStatus('Uploads finalizados!')
-    
-                toast({
-                    title: `Produto adicionado com sucesso!`,
-                })
-                form.reset()
-            } catch (err) {
-                console.error(err)
-                setUploadProgress(0)
-                setUploadStatus('Algo deu errado!')
+            console.log(downloadsUrl)
+            setUploadStatus('Uploads finalizados!')
+
+            // Write product to database
+            const productsRef = collection(db, "products")
+            const newProduct = {
+                ...formData,
+                images: downloadsUrl,
+                createdAt: new Date(),
             }
+            const docRef = await addDoc(productsRef, newProduct)
+            console.log(`Document written with ID: ${docRef.id}`)
+
+            toast({
+                title: `Produto adicionado com sucesso!`,
+            })
+            form.reset()
+
         } catch (err) {
-            console.error(`Error adding document: ${err}`)
+            console.error(err)
+            setUploadProgress(0)
+            setUploadStatus('Algo deu errado!')
         }
     }
 
