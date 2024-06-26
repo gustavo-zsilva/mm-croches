@@ -1,7 +1,6 @@
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Send } from "lucide-react";
 import { Badge } from "./ui/badge";
-import { CirclePlus } from "lucide-react";
 
 type ProductCardProps = {
   item: {
@@ -10,7 +9,7 @@ type ProductCardProps = {
     price: number,
     type: string,
     customMeasure: boolean,
-    prompDelivery: boolean,
+    promptDelivery: boolean,
     images: string[],
     id: string,
   },
@@ -45,7 +44,7 @@ export function ProductCard({ item, variant = "default" }: ProductCardProps) {
           className="object-cover group-hover:scale-105 transition-transform"
         />
       </picture>
-      <div className="flex flex-col gap-1 font-medium">
+      <div className="flex flex-col gap-2 font-medium">
         <header className="flex justify-between">
           <h3>{item.name}</h3>
           {variant !== "store" && <ArrowRight
@@ -54,12 +53,15 @@ export function ProductCard({ item, variant = "default" }: ProductCardProps) {
           />}
         </header>
         <p className="text-black/60">{item.description}</p>
-        <footer className="flex items-center justify-between">
-          <span>{formattedPrice}</span>
-          {item.customMeasure && variant !== "store" && <Badge>Sob medida</Badge>}
+        <div className="space-x-2">
+          {item.customMeasure && <Badge>Sob medida</Badge>}
+          {item.promptDelivery && <Badge variant="secondary">Pronta entrega</Badge>}
+        </div>
+        <footer className="flex items-center justify-between mt-3">
+          <span className="text-lg">{formattedPrice}</span>
           {variant === "store" &&
-            <button className="flex items-center gap-3 py-2 px-5 border-2 border-gray-300 rounded-2xl hover:border-teal-400 hover:bg-teal-50 transition-colors">
-              <CirclePlus /> Carrinho
+            <button className="flex items-center gap-3 py-2 px-5 border-2 border-gray-300 rounded-2xl hover:border-indigo-400 hover:bg-indigo-50 transition-colors">
+              <Send /> Eu quero!
             </button>}
         </footer>
       </div>
