@@ -35,7 +35,7 @@ export function Header() {
         >
           Loja
         </Link>
-        <Link href="#contact">Contato</Link>
+        <Link href="/#contact">Contato</Link>
       </nav>
         <Link href="/store" className="hidden lg:inline">
           <Button>Encomendar</Button>
