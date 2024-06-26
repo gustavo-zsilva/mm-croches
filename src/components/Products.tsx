@@ -4,6 +4,9 @@ import { ProductCard } from "./ProductCard";
 import { Button } from "./ui/button";
 import { ArrowRight } from "lucide-react";
 
+import { query, limit, orderBy, collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase/firebase";
+
 type Product = {
   imagePath: string;
   name: string;
@@ -13,12 +16,20 @@ type Product = {
 };
 
 export async function Products() {
-  const file = await fs.readFile(process.cwd() + "/products.json", "utf-8");
-  const products: Product[] = JSON.parse(file);
+  const productsRef = collection(db, "products")
+  const q = query(productsRef, orderBy("createdAt", "desc"), limit(3))
+
+  const querySnapshot = await getDocs(q)
+  const products: any[] = []
+
+  querySnapshot.forEach(doc => products.push(doc.data()))
+
+  console.log(products);
+  
 
   return (
     <section className="flex flex-col items-center gap-10 max-w-screen-xl lg:m-auto lg:gap-20">
-      <h1 className="text-primary">Algumas peças</h1>
+      <h1 className="text-primary">Peças recentes</h1>
       <ul className="flex flex-col w-full gap-6 md:grid md:grid-cols-3">
         {products.map((product) => (
           <ProductCard key={product.name} item={product} />
