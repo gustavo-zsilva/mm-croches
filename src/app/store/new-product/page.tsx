@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 
 import { collection, addDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase/firebase"
@@ -33,6 +33,7 @@ import {
 import { useToast } from "@/components/ui/use-toast"
 
 import { DragDropInput } from "@/components/DragDropInput"
+import { Loader } from "lucide-react"
 
 const MAX_FILE_SIZE = 2000000
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
@@ -55,6 +56,7 @@ export default function NewProduct() {
     const { toast } = useToast()
     const [uploadProgress, setUploadProgress] = useState(0)
     const [uploadStatus, setUploadStatus] = useState('')
+    const [isPending, startTransition] = useTransition()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -70,72 +72,71 @@ export default function NewProduct() {
     })
 
     async function handleSubmit(values: z.infer<typeof formSchema>) {
-        try {
-            const { images, ...formData } = values
-
-            // Upload Images
-            const storage = getStorage()
-            
-            let totalSize = images.reduce((acc: number, file: File) => acc + file.size, 0)
-            let uploadedSize = 0
-            const uploadedSizesTracker: number[] = []
-
-            const promisesImagesUpload: Promise<string>[] = images.map((file: File, index: number) => {
-                const storageRef = ref(storage, `uploads/${values.name}-${index}`)
-                const uploadTask = uploadBytesResumable(storageRef, file, { contentType: file.type })
-
-                return new Promise((resolve, reject) => {
-                    setUploadStatus('Fazendo upload...')
-                    uploadTask.on('state_changed', snapshot => {
-                        // Monitora em um array os uploaded bytes de cada imagem individual, calcula o ganho de bytes de cada snapshot,
-                        // atualiza o número atual de uploaded bytes no array e adiciona o ganho de bytes em 'uploadedSize'.
-                        const prevUploadedSize = uploadedSizesTracker[index] || 0
-                        const currentUploadedSize = snapshot.bytesTransferred - prevUploadedSize
-
-                        uploadedSizesTracker[index] = snapshot.bytesTransferred
-                        uploadedSize += currentUploadedSize
-                        
-                        // Ele ta pegando e adicionando o bytesTransfered de antes com o depois, e não adicionando a diferença, que era pra ser o correto
-                        // Exemplo: 100 bytes agora, proximo snapshot 120 bytes. uploadedSize deveria ser 120, e não 220.
-                        
-                        const progress = Math.round((uploadedSize / totalSize) * 100)
-
-                        setUploadProgress(progress)
-                    }, (error) => {
-                        reject(error)
-                        uploadTask.cancel()
-                    }, () => {
-                        getDownloadURL(uploadTask.snapshot.ref)
-                            .then(downloadURL => resolve(downloadURL))
+        startTransition(async () => {
+            try {
+                const { images, ...formData } = values
+    
+                // Upload Images
+                const storage = getStorage()
+                
+                let totalSize = images.reduce((acc: number, file: File) => acc + file.size, 0)
+                let uploadedSize = 0
+                const uploadedSizesTracker: number[] = []
+    
+                const promisesImagesUpload: Promise<string>[] = images.map((file: File, index: number) => {
+                    const storageRef = ref(storage, `uploads/${values.name}-${index}`)
+                    const uploadTask = uploadBytesResumable(storageRef, file, { contentType: file.type })
+    
+                    return new Promise((resolve, reject) => {
+                        setUploadStatus('Fazendo upload...')
+                        uploadTask.on('state_changed', snapshot => {
+                            // Monitora em um array os uploaded bytes de cada imagem individual, calcula o ganho de bytes de cada snapshot,
+                            // atualiza o número atual de uploaded bytes no array e adiciona o ganho de bytes em 'uploadedSize'.
+                            const prevUploadedSize = uploadedSizesTracker[index] || 0
+                            const currentUploadedSize = snapshot.bytesTransferred - prevUploadedSize
+    
+                            uploadedSizesTracker[index] = snapshot.bytesTransferred
+                            uploadedSize += currentUploadedSize
+                            
+                            // Ele ta pegando e adicionando o bytesTransfered de antes com o depois, e não adicionando a diferença, que era pra ser o correto
+                            // Exemplo: 100 bytes agora, proximo snapshot 120 bytes. uploadedSize deveria ser 120, e não 220.
+                            
+                            const progress = Math.round((uploadedSize / totalSize) * 100)
+    
+                            setUploadProgress(progress)
+                        }, (error) => {
+                            reject(error)
+                            uploadTask.cancel()
+                        }, () => {
+                            getDownloadURL(uploadTask.snapshot.ref)
+                                .then(downloadURL => resolve(downloadURL))
+                        })
                     })
                 })
-            })
-
-            const downloadsUrl = await Promise.all(promisesImagesUpload)
-
-            console.log(downloadsUrl)
-            setUploadStatus('Uploads finalizados!')
-
-            // Write product to database
-            const productsRef = collection(db, "products")
-            const newProduct = {
-                ...formData,
-                images: downloadsUrl,
-                createdAt: new Date(),
+    
+                const downloadsUrl = await Promise.all(promisesImagesUpload)
+                setUploadStatus('Uploads finalizados!')
+    
+                // Write product to database
+                const productsRef = collection(db, "products")
+                const newProduct = {
+                    ...formData,
+                    images: downloadsUrl,
+                    createdAt: new Date(),
+                }
+                const docRef = await addDoc(productsRef, newProduct)
+    
+                toast({
+                    title: `Produto adicionado com sucesso!`,
+                })
+                form.reset()
+    
+            } catch (err) {
+                console.error(err)
+                setUploadProgress(0)
+                setUploadStatus('Algo deu errado!')
             }
-            const docRef = await addDoc(productsRef, newProduct)
-            console.log(`Document written with ID: ${docRef.id}`)
-
-            toast({
-                title: `Produto adicionado com sucesso!`,
-            })
-            form.reset()
-
-        } catch (err) {
-            console.error(err)
-            setUploadProgress(0)
-            setUploadStatus('Algo deu errado!')
-        }
+        })
     }
 
     return (
@@ -258,7 +259,13 @@ export default function NewProduct() {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full rounded-sm">Cadastrar</Button>
+                    <Button
+                        type="submit"
+                        disabled={isPending}
+                        className="w-full rounded-sm"
+                    >
+                        {isPending ? <Loader className="animate-spin" /> : 'Cadastrar'}
+                    </Button>
                 </form>
             </Form>
         </div>
