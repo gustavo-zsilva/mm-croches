@@ -46,11 +46,11 @@ export default async function Store() {
   const accessoryList = docs.filter(doc => doc.type === 'accessory')
 
   return (
-    <main className="min-h-screen flex flex-col gap-6">
+    <main className="min-h-screen flex flex-col gap-20 items-center">
       <Hero />
-      <section>
-        <h2 className="my-10 text-2xl text-center">O que te agrada? &gt;</h2>
-        <ul className="flex flex-col items-center gap-10">
+      <section className="max-w-screen-xl w-full">
+        <h2 className="my-10 text-2xl text-center lg:text-left">O que te agrada? &gt;</h2>
+        <ul className="flex flex-col gap-10 md:flex-row md:gap-5">
           <StoreJumpCard
             title="Amigurumis"
             imagePath="/images/products/yoshi.jpg"

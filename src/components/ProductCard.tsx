@@ -35,7 +35,7 @@ export function ProductCard({ item, variant = "default" }: ProductCardProps) {
       group
       ${variantsStyle[variant]}
     `}>
-      <picture className="relative w-full h-36 rounded-lg overflow-hidden">
+      <picture className="relative w-full min-h-36 rounded-lg overflow-hidden">
         <Image
           src={item.images[0]}
           fill
@@ -44,19 +44,21 @@ export function ProductCard({ item, variant = "default" }: ProductCardProps) {
           className="object-cover group-hover:scale-105 transition-transform"
         />
       </picture>
-      <div className="flex flex-col gap-2 font-medium">
-        <header className="flex justify-between">
-          <h3>{item.name}</h3>
-          {variant !== "store" && <ArrowRight
-            size={22}
-            className="group-hover:text-primary group-hover:-rotate-45 transition-transform"
-          />}
+      <div className="flex flex-col justify-between font-medium h-full">
+        <header className="flex flex-col gap-2">
+          <div className="flex justify-between">
+            <h3>{item.name}</h3>
+            {variant !== "store" && <ArrowRight
+              size={22}
+              className="group-hover:text-primary group-hover:-rotate-45 transition-transform"
+            />}
+          </div>
+          <p className="text-black/60">{item.description}</p>
+          <div className="space-x-2">
+            {item.customMeasure && <Badge>Sob medida</Badge>}
+            {item.promptDelivery && <Badge variant="secondary">Pronta entrega</Badge>}
+          </div>
         </header>
-        <p className="text-black/60">{item.description}</p>
-        <div className="space-x-2">
-          {item.customMeasure && <Badge>Sob medida</Badge>}
-          {item.promptDelivery && <Badge variant="secondary">Pronta entrega</Badge>}
-        </div>
         <footer className="flex items-center justify-between mt-3">
           <span className="text-lg">{formattedPrice}</span>
           {variant === "store" &&
