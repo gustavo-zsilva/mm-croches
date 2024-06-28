@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { GradientText, HighlightedText } from "@/lib/StyledText";
+import { ExternalLink } from "@/lib/ExternalLink";
 import { WavyBg } from "@/lib/WavyBg";
 
 import { Button } from "./ui/button";
@@ -10,7 +11,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
 
 import { ChevronRight } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
@@ -59,30 +60,32 @@ export function About() {
             <AccordionItem value="item-1">
               <AccordionTrigger>Artesanato de Qualidade</AccordionTrigger>
               <AccordionContent>
-                Cada peça é feita com atenção aos detalhes, utilizando materiais de alta
-                qualidade para garantir durabilidade e beleza.
+                Cada peça é feita com atenção aos detalhes, utilizando materiais
+                de alta qualidade para garantir durabilidade e beleza.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
               <AccordionTrigger>Personalização</AccordionTrigger>
               <AccordionContent>
-                Valorizo a individualidade de cada cliente, oferecendo opções personalizadas
-                para atender às suas necessidades e preferências.
+                Valorizo a individualidade de cada cliente, oferecendo opções
+                personalizadas para atender às suas necessidades e preferências.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
               <AccordionTrigger>Cliente em Primeiro Lugar</AccordionTrigger>
               <AccordionContent>
-                Meu compromisso é com a satisfação do cliente, oferecendo um atendimento
-                personalizado e um relacionamento transparente e confiável.
+                Meu compromisso é com a satisfação do cliente, oferecendo um
+                atendimento personalizado e um relacionamento transparente e
+                confiável.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-4">
               <AccordionTrigger>Sob Encomenda</AccordionTrigger>
               <AccordionContent>
-                Produtos feitos sob encomenda podem exigir mais tempo para produção.
-                O tempo de entrega pode variar entre 1 a 3 semanas, dependendo da
-                complexidade da peça e do volume de pedidos no momento.
+                Produtos feitos sob encomenda podem exigir mais tempo para
+                produção. O tempo de entrega pode variar entre 1 a 3 semanas,
+                dependendo da complexidade da peça e do volume de pedidos no
+                momento.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -97,10 +100,12 @@ export function About() {
               />
             </Button>
           </Link>
-          <Button variant="link">
-            Entre em contato
-            <FaWhatsapp color="#FFF" size={24} />
-          </Button>
+          <ExternalLink href="https://wa.me/5548991190544">
+            <Button variant="link">
+              Entre em contato
+              <FaWhatsapp color="#FFF" size={24} />
+            </Button>
+          </ExternalLink>
         </div>
       </WavyBg>
     </section>
