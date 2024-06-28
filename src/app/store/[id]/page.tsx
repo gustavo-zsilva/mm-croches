@@ -1,68 +1,69 @@
-import Image from 'next/image'
-import { promises as fs } from "fs";
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from '@/components/ui/carousel'
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { DocumentData, doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase/firebase";
 
 type ProductPageProps = {
-    params: {
-        id: string,
-    }
-}
+  params: {
+    id: string;
+  };
+};
 
 type Product = {
-  imagePath: string;
+  images: string[];
   name: string;
   price: number;
   description: string;
-  underMeasure: boolean;
+  customMeasure: boolean;
+  promptDelivery: boolean;
+  type: string;
 };
 
 export default async function Product({ params }: ProductPageProps) {
-    const file = await fs.readFile(process.cwd() + "/products.json", "utf-8");
-    const products: Product[] = JSON.parse(file);
+  const docRef = doc(db, "products", params.id);
+  const docSnap = await getDoc(docRef);
 
-    const product = products.find(item => item.imagePath === params.id)
+  if (!docSnap.exists()) return <h1>Item não encontrado</h1>;
 
-    if (!product) return <h1>Item não encontrado</h1>
+  const product = docSnap.data() as Product;
 
-    return (
-        <main className="min-h-screen flex flex-col gap-6 justify-center">
-            <Carousel className="w-full max-w-xs">
-                <CarouselContent>
-                        {Array.from({ length: 6 }).map((_, index) => (
-                            <CarouselItem key={index} className="">
-                                <picture>
-                                    <Image
-                                        src={`/images/products/${product.imagePath}.jpg`}
-                                        // fill
-                                        width={300}
-                                        height={300}
-                                        // className="object-cover"
-                                        alt="Product Image"
-                                    />
-                                </picture>
-                            </CarouselItem>
-                        ))}
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-            </Carousel>
-            <div className="flex flex-col gap-3 px-6">
-                <h2>{product.name}</h2>
-                <span>{product.underMeasure && <Badge>Sob Medida</Badge>}</span>
-                <span className="text-xl font-semibold">R$ {product.price}</span>
-                <p>{product.description}</p>
-                <Button>
-                    Encomendar
-                </Button>
-            </div>
-        </main>
-    )
+  return (
+    <main className="min-h-screen flex flex-col gap-6 justify-center">
+      <Carousel className="w-full max-w-xs">
+        <CarouselContent>
+          {product.images.map((image, index) => (
+            <CarouselItem key={index} className="">
+              <picture>
+                <Image
+                  src={image}
+                  // fill
+                  width={300}
+                  height={300}
+                  // className="object-cover"
+                  alt="Product Image"
+                />
+              </picture>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+      <div className="flex flex-col gap-3 px-6">
+        <h2>{product.name}</h2>
+        <span>{product.customMeasure && <Badge>Sob Medida</Badge>}</span>
+        <span className="text-xl font-semibold">R$ {product.price}</span>
+        <p>{product.description}</p>
+        <Button>Encomendar</Button>
+      </div>
+    </main>
+  );
 }
