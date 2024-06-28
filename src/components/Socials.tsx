@@ -1,5 +1,4 @@
-import { FaWhatsapp } from "react-icons/fa";
-import { FaInstagram } from "react-icons/fa";
+import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 import { Mail } from "lucide-react";
 import { ExternalLink } from "@/lib/ExternalLink";
 
