@@ -117,7 +117,6 @@ export default function NewProduct() {
             });
 
             return new Promise((resolve, reject) => {
-              setUploadStatus("Fazendo upload...");
               uploadTask.on(
                 "state_changed",
                 (snapshot) => {
@@ -151,6 +150,7 @@ export default function NewProduct() {
           },
         );
 
+        setUploadStatus("Fazendo upload...");
         const downloadsUrl = await Promise.all(promisesImagesUpload);
         setUploadStatus("Uploads finalizados!");
 
@@ -161,7 +161,7 @@ export default function NewProduct() {
           images: downloadsUrl,
           createdAt: new Date(),
         };
-        const docRef = await addDoc(productsRef, newProduct);
+        await addDoc(productsRef, newProduct);
 
         toast({
           title: `Produto adicionado com sucesso!`,
@@ -176,13 +176,16 @@ export default function NewProduct() {
   }
 
   return (
-    <div className="px-6">
+    <div className="px-6 max-w-screen-lg m-auto w-full">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="space-y-8 md:grid md:grid-cols-2 md:gap-10 md:space-y-0"
+        >
           <FormField
             name="name"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="md:order-1">
                 <FormLabel>Nome do produto</FormLabel>
                 <FormControl>
                   <Input placeholder="Nome" {...field} />
@@ -195,7 +198,7 @@ export default function NewProduct() {
           <FormField
             name="description"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="md:order-3 md:col-span-2 ">
                 <FormLabel>Descrição do produto</FormLabel>
                 <FormControl>
                   <Input placeholder="Descrição" {...field} />
@@ -208,7 +211,7 @@ export default function NewProduct() {
           <FormField
             name="price"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="md:order-2">
                 <FormLabel>Preço (R$)</FormLabel>
                 <FormControl>
                   <Input placeholder="Preço" type="number" {...field} />
@@ -220,7 +223,7 @@ export default function NewProduct() {
           <FormField
             name="images"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="md:order-4 md:col-span-2">
                 <FormLabel>Imagem</FormLabel>
                 <FormControl>
                   <DragDropInput
@@ -235,7 +238,7 @@ export default function NewProduct() {
               </FormItem>
             )}
           />
-          <div className="grid grid-cols-2 place-items-center">
+          <div className="grid grid-cols-2 place-items-center md:order-5">
             <FormField
               name="customMeasure"
               render={({ field }) => (
@@ -268,7 +271,7 @@ export default function NewProduct() {
           <FormField
             name="type"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="md:order-6">
                 <FormLabel>Tipo</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
@@ -292,7 +295,7 @@ export default function NewProduct() {
           <Button
             type="submit"
             disabled={isPending}
-            className="w-full rounded-sm"
+            className="w-full py-6 rounded-sm md:order-7 md:col-span-2"
           >
             {isPending ? <Loader className="animate-spin" /> : "Cadastrar"}
           </Button>
