@@ -1,25 +1,29 @@
-import { NextRequest } from 'next/server'
+import { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-    // Get Authorization from cookies
-    const idToken = request.cookies.get('token')?.value
-    
-    if (!idToken) {
-        return Response.redirect(new URL('/store', request.url))
-    }
+  // Get Authorization from cookies
+  const idToken = request.cookies.get("token")?.value;
 
-    const data = await fetch('http://localhost:3000/api/verifyToken', {
-        headers: request.headers, // Pass along headers, so that route handler can access cookies
-        cache: 'no-cache',
-    })
+  if (!idToken) {
+    return Response.redirect(new URL("/store", request.url));
+  }
 
-    const retrievedToken = await data.json()
+  try {
+    const data = await fetch("http://localhost:3000/api/verifyToken", {
+      headers: request.headers, // Pass along headers, so that route handler can access cookies
+      cache: "no-cache",
+    });
+
+    const retrievedToken = await data.json();
 
     if (retrievedToken.status !== 201) {
-        return Response.redirect(new URL('/store', request.url))
+      return Response.redirect(new URL("/store", request.url));
     }
+  } catch (err) {
+    return Response.redirect(new URL("/store", request.url));
+  }
 }
 
 export const config = {
-    matcher: '/store/new-product'
-}
+  matcher: "/store/new-product",
+};
