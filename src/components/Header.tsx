@@ -24,7 +24,7 @@ export function Header() {
         >
           Home
         </Link>
-        <Link href="#about">Sobre</Link>
+        <Link href="/#about">Sobre</Link>
         <Link
           href="/store"
           className={
@@ -37,9 +37,9 @@ export function Header() {
         </Link>
         <Link href="/#contact">Contato</Link>
       </nav>
-        <Link href="/store" className="hidden lg:inline">
-          <Button>Encomendar</Button>
-        </Link>
+      <Link href="/store" className="hidden lg:inline">
+        <Button>Encomendar</Button>
+      </Link>
     </header>
   );
 }
