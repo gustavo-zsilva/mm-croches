@@ -41,6 +41,7 @@ export function Main() {
             delay: 3000,
           }),
         ]}
+        opts={{ loop: true }}
         className="w-full max-w-xs min-h-20 lg:row-span-2"
       >
         <CarouselContent>
