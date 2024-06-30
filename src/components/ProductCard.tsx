@@ -33,14 +33,15 @@ export function ProductCard({ item, variant = "default" }: ProductCardProps) {
     <Link href={`/store/${item.id}`}>
       <li
         className={`
-        flex
-        flex-col
-        cursor-pointer
-        rounded-lg
-        w-full
-        gap-4
-        group
-        ${variantsStyle[variant]}
+          flex
+          flex-col
+          cursor-pointer
+          rounded-lg
+          w-full
+          h-full
+          gap-4
+          group
+          ${variantsStyle[variant]}
       `}
       >
         <picture className="relative w-full min-h-36 rounded-lg overflow-hidden">
