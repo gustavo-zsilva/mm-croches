@@ -40,7 +40,7 @@ export default async function Store() {
 
   querySnapshot.forEach((doc) => {
     docs.push({
-      ...doc.data() as DocData,
+      ...(doc.data() as DocData),
       id: doc.id,
     });
   });
@@ -59,19 +59,19 @@ export default async function Store() {
         <ul className="flex flex-col gap-10 md:flex-row md:gap-5">
           <StoreJumpCard
             title="Amigurumis"
-            imagePath="/images/products/yoshi.jpg"
+            imagePath="/images/products/amigurumi.jpg"
             description="Leve uma companhia para casa!"
             href="amigurumis"
           />
           <StoreJumpCard
             title="Roupas"
-            imagePath="/images/products/top.jpg"
+            imagePath="/images/products/clothing.jpg"
             description="Pra ficar estiloso(a) o ano inteiro"
             href="clothing"
           />
           <StoreJumpCard
             title="Acessórios"
-            imagePath="/images/products/gorro.jpg"
+            imagePath="/images/products/accessory.jpg"
             description="Se destaque com estas peças"
             href="accessories"
           />
