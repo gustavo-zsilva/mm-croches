@@ -1,8 +1,9 @@
 import { dancingScript } from "@/utils/fonts";
 
 export function Hero() {
-    return (
-        <div className="
+  return (
+    <div
+      className="
             bg-[linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url(/assets/hero.jpg)]
             bg-cover
             bg-center
@@ -15,9 +16,14 @@ export function Hero() {
             gap-8
             text-white
             p-9
-        ">
-            <h1 className={`${dancingScript.className} text-5xl`}>Loja de Crochês</h1>
-            <p className="text-lg text-center">Aqui você pode dar uma olhada no catálogo inteiriiiiinho.</p>
-        </div>
-    )
+        "
+    >
+      <h1 className={`${dancingScript.className} text-4xl sm:text-5xl`}>
+        Loja de Crochês
+      </h1>
+      <p className="text-lg text-center">
+        Aqui você pode dar uma olhada no catálogo inteiriiiiinho.
+      </p>
+    </div>
+  );
 }
