@@ -75,7 +75,21 @@ export function ProductCard({ item, variant = "default" }: ProductCardProps) {
           <footer className="flex items-center justify-between mt-3">
             <span className="text-lg">{formattedPrice}</span>
             {variant === "store" && (
-              <button className="flex items-center gap-3 py-2 px-5 border-2 border-gray-300 rounded-2xl hover:border-indigo-400 hover:bg-indigo-50 transition-colors">
+              <button
+                className="
+                  flex
+                  items-center
+                  gap-3
+                  py-2
+                  px-5
+                  border-2
+                  border-gray-300
+                  rounded-2xl
+                  hover:border-indigo-400
+                  hover:bg-indigo-50
+                  transition-colors
+                "
+              >
                 <Send /> Eu quero!
               </button>
             )}
