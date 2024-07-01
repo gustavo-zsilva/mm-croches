@@ -29,8 +29,12 @@ export function Contact() {
             </header>
             <p>
               Envie uma mensagem pelo WhatsApp para{" "}
-              <HighlightedText>+55 (48) 99119-0544</HighlightedText>.
-              Respondemos em até 24 horas.
+              <HighlightedText>
+                <ExternalLink href="https://wa.me/5548991190544">
+                  +55 (48) 99119-0544
+                </ExternalLink>
+              </HighlightedText>
+              . Respondemos em até 24 horas.
             </p>
           </li>
           <ChevronDown className="md:hidden" />
