@@ -18,7 +18,7 @@ export function Socials() {
         <FaInstagram size={24} />
       </ExternalLink>
       <a
-        href="#"
+        href="mailto:mmcozycrochet@gmail.com"
         className="border p-2 rounded-full hover:bg-gray-200/20 transition-colors"
       >
         <Mail />
