@@ -9,7 +9,7 @@ export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="flex flex-col items-center py-4 gap-4 px-6 w-full max-w-screen-xl lg:grid lg:grid-cols-3 lg:place-items-center lg:m-auto">
+    <header className="flex flex-col items-center py-4 gap-4 px-6 w-full max-w-screen-xl lg:grid lg:grid-cols-3 lg:place-items-center xl:place-items-stretch lg:m-auto">
       <Link href="/">
         <Image width={90} height={90} src="/images/logo.png" alt="Logo" />
       </Link>
@@ -37,7 +37,10 @@ export function Header() {
         </Link>
         <Link href="/#contact">Contato</Link>
       </nav>
-      <Link href="/store" className="hidden lg:inline">
+      <Link
+        href="/store"
+        className="hidden lg:flex xl:items-center xl:justify-self-end"
+      >
         <Button>Encomendar</Button>
       </Link>
     </header>
