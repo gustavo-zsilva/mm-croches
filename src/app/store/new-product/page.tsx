@@ -134,6 +134,7 @@ export default function NewProduct() {
 
                   const progress = Math.round((uploadedSize / totalSize) * 100);
 
+                  setUploadStatus("Fazendo upload...");
                   setUploadProgress(progress);
                 },
                 (error) => {
@@ -150,7 +151,6 @@ export default function NewProduct() {
           },
         );
 
-        setUploadStatus("Fazendo upload...");
         const downloadsUrl = await Promise.all(promisesImagesUpload);
         setUploadStatus("Uploads finalizados!");
 
