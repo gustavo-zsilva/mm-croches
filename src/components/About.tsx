@@ -58,30 +58,38 @@ export function About() {
         <div className="w-full">
           <Accordion type="single" collapsible>
             <AccordionItem value="item-1">
-              <AccordionTrigger>Artesanato de Qualidade</AccordionTrigger>
-              <AccordionContent>
+              <AccordionTrigger className="lg:text-xl">
+                Artesanato de Qualidade
+              </AccordionTrigger>
+              <AccordionContent className="lg:text-lg">
                 Cada peça é feita com atenção aos detalhes, utilizando materiais
                 de alta qualidade para garantir durabilidade e beleza.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
-              <AccordionTrigger>Personalização</AccordionTrigger>
-              <AccordionContent>
+              <AccordionTrigger className="lg:text-xl">
+                Personalização
+              </AccordionTrigger>
+              <AccordionContent className="lg:text-lg">
                 Valorizo a individualidade de cada cliente, oferecendo opções
                 personalizadas para atender às suas necessidades e preferências.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
-              <AccordionTrigger>Cliente em Primeiro Lugar</AccordionTrigger>
-              <AccordionContent>
+              <AccordionTrigger className="lg:text-xl">
+                Cliente em Primeiro Lugar
+              </AccordionTrigger>
+              <AccordionContent className="lg:text-lg">
                 Meu compromisso é com a satisfação do cliente, oferecendo um
                 atendimento personalizado e um relacionamento transparente e
                 confiável.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-4">
-              <AccordionTrigger>Sob Encomenda</AccordionTrigger>
-              <AccordionContent>
+              <AccordionTrigger className="lg:text-xl">
+                Sob Encomenda
+              </AccordionTrigger>
+              <AccordionContent className="lg:text-lg">
                 Produtos feitos sob encomenda podem exigir mais tempo para
                 produção. O tempo de entrega pode variar entre 1 a 3 semanas,
                 dependendo da complexidade da peça e do volume de pedidos no
