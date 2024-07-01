@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className="scroll-smooth">
+    <html lang="pt-BR" className="scroll-smooth motion-reduce:scroll-auto">
       <body className={`${poppins.className} m-auto`}>
         <div className="relative">
           {children}
