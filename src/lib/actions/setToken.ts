@@ -11,5 +11,6 @@ export async function handleSetToken({ idToken }: ActionProps) {
   cookieStore.set("token", idToken, {
     httpOnly: true,
     maxAge: 60 * 60 * 24 * 30, // 30 days
+    sameSite: "none",
   });
 }
