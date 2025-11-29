@@ -32,7 +32,7 @@ Esse projeto foi desenvolvido com as seguintes tecnologias:
 
 Este projeto foi feito para servir de loja, landing page e afins da marca.
 
-- [Projeto não disponível online ainda](https://mmcozycrochet.vercel.app/)
+- [Projeto Online](https://mmcozycrochet.vercel.app/)
 
 ## 🔖 Layout
 
